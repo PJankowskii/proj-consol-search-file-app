@@ -8,19 +8,21 @@ class App(object):
     def __init__(self):
         pass
 
-    def path(self, dir_path, extension):
+    def path(self, dir_path, extension, depth):
         """
         Method searching for file paths with appropriate extensions
+        :param depth: user-defined folder entry depth
         :param dir_path: user-supplied path is needed to search folder
         :param extension: the file extension we want to find
         :return: returns the paths of the files
         """
         search_results = []
-        for root, dir_names, file_names in os.walk(dir_path):
-            for file_name in file_names:
-                if file_name.endswith('.' + extension):
-                    search_path = os.path.join(root, file_name)
-                    search_results.append(search_path)
+        for root, dir_names, file_names in os.walk(dir_path, topdown=True):
+            if root[len(dir_path):].count(os.sep) < depth + 1:
+                for file_name in file_names:
+                    if file_name.endswith('.' + extension):
+                        search_path = os.path.join(root, file_name)
+                        search_results.append(search_path)
         return search_results
 
     def processing(self, data_process):
@@ -55,8 +57,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("-path", dest='dir_path', help="Enter the path you're looking for", type=str)
     parser.add_argument("-extension", dest='extension', help="Enter the extension you're looking for", type=str)
+    parser.add_argument("-depth", dest='depth', help="Enter how deep you want to go", type=int)
     args = parser.parse_args()
     app = App()
-    result = app.path(args.dir_path, args.extension)
+    result = app.path(args.dir_path, args.extension, args.depth)
     data = app.processing(result)
     app.write_to_file(data)
