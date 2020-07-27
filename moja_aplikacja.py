@@ -87,7 +87,8 @@ class App(object):
         """
         Method to save the data to the CSV file
         :param list_data_to_save: list, list data needed to be written to the file
-        :type list_data_to_save: [[]]
+        :type list_data_to_save: list
+        :rtype : [[]]
         :return: none
         """
         with open('zapis.csv', 'wb') as csv_file:
@@ -100,7 +101,8 @@ class App(object):
         """
         Method to save the data to the JSON file
         :param dict_data_to_save: dict, list data needed to be written to the file
-        :type dict_data_to_save: [dict]
+        :type dict_data_to_save: dict
+        :rtype : [dict]
         :return: none
         """
         with open('test.json', 'wb') as json_file:
