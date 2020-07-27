@@ -6,6 +6,7 @@ __pycache__/
 *$py.class
 # Private Project
 *.csv
+*.json
 # C extensions
 *.so
 
