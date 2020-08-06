@@ -2,6 +2,8 @@ import os
 import csv
 import argparse
 import json
+import sqlite3
+from datetime import datetime
 
 
 class App(object):
@@ -108,6 +110,39 @@ class App(object):
         with open('test.json', 'wb') as json_file:
             json.dump(dict_data_to_save, json_file, indent=4, sort_keys=True)
 
+    def write_to_database(self, list_dict_data, information):
+        """
+        :param data:
+        :type data: [dict]
+        :return:
+        """
+        conn = sqlite3.connect('db.sqlite3')
+        c = conn.cursor()
+        sql_file_search_result = '''INSERT INTO web_app_filesearchresult (
+                                    file_name,
+                                    file_extension, 
+                                    file_path, 
+                                    file_size, 
+                                    search_result_fk_id_id
+                                    ) 
+                                    VALUES (?, ?, ?, ?, ?)'''
+        sql_search_result = '''INSERT INTO web_app_searchresult (
+                                     path,
+                                     extensions,
+                                     scan_date,
+                                     number_of_files
+                                 )
+                                 VALUES (?,?,?,?)'''
+        c.execute(sql_search_result,
+                  [information.dir_path, information.extensions, datetime.now(), len(list_dict_data)])
+        last_name_id = c.lastrowid
+        for dict_data_key in list_dict_data:
+            c.execute(sql_file_search_result,
+                      [dict_data_key['file_name'], dict_data_key['file_extension'], dict_data_key['file_path'],
+                       dict_data_key['file_size'], last_name_id])
+        conn.commit()
+        conn.close()
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -120,3 +155,4 @@ if __name__ == '__main__':
     list_data, dict_data = app.processing(result)
     app.write_to_csv_file(list_data)
     app.write_to_json_file(dict_data)
+    app.write_to_database(dict_data, args)
